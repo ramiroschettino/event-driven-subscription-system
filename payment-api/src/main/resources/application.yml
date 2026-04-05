@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: payment-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/membership_db
+    username: rappi
+    password: rappipassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+
+server:
+  port: 8081 # Run on a different port than membership-service (8080)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+# Resilience4j configuration for payment simulation
+resilience4j.circuitbreaker:
+  instances:
+    visaService:
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      minimumNumberOfCalls: 3
+      permittedNumberOfCallsInHalfOpenState: 2
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+
+resilience4j.retry:
+  instances:
+    visaService:
+      maxAttempts: 3
+      waitDuration: 1s
+      failAfterMaxAttempts: true
+
+logging:
+  level:
+    com.rappi.payment: DEBUG
