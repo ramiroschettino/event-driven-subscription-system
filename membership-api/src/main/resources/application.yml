@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: membership-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/membership_db
+    username: rappi
+    password: rappipassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: membership-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# Resilience4j configuration for payment simulation
+resilience4j.circuitbreaker:
+  instances:
+    paymentService:
+      registerHealthIndicator: true
+      slidingWindowSize: 5
+      minimumNumberOfCalls: 3
+      permittedNumberOfCallsInHalfOpenState: 2
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+
+resilience4j.retry:
+  instances:
+    paymentService:
+      maxAttempts: 3
+      waitDuration: 1s
+      failAfterMaxAttempts: true
+
+logging:
+  level:
+    com.rappi.membership: DEBUG
