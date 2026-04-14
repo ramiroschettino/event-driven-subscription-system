@@ -19,11 +19,8 @@ public class VisaPaymentGatewayAdapter implements PaymentGatewayPort {
     @CircuitBreaker(name = "visaService", fallbackMethod = "chargeFallback")
     @Retry(name = "visaService")
     public boolean charge(String userId, Double amount) {
-        log.info("Contacting external VISA API for user {} with amount {}", userId, amount);
-        
-        // Simulating failure 20% of the time to trigger circuit breaker
-        if (random.nextInt(10) < 2) {
-            log.error("VISA API Connection timed out.");
+        if (random.nextDouble() < 0.2) {
+            log.warn("VISA Gateway simulation failed for user {}", userId);
             throw new RuntimeException("VISA API Connection Timeout");
         }
 

@@ -48,7 +48,6 @@ public class KafkaPaymentConsumerAdapter {
         try {
             PaymentApprovedEvent event = objectMapper.readValue(payload, PaymentApprovedEvent.class);
             
-            // Extract MembershipType from the concept or map it. Simplification for demo:
             MembershipType type = MembershipType.PRO;
             if (event.concept().contains("PLUS")) {
                 type = MembershipType.PRO_PLUS;

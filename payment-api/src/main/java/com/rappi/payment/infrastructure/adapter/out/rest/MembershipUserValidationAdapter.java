@@ -37,7 +37,6 @@ public class MembershipUserValidationAdapter implements UserValidationPort {
             throw e;
         } catch (Exception e) {
             log.error("Unknown error communicating with Membership API", e);
-            // Optionally, we could assume true or throw a Retryable exception. We throw it to block payment.
             throw new RuntimeException("Could not validate user existence", e);
         }
     }

@@ -41,10 +41,32 @@ docker logs -f payment_api
 docker logs -f membership_api
 ```
 
-## Probando el flujo completo con Postman
+## Probando el flujo completo (Endpoints)
 
-En la raíz del proyecto vas a encontrar el archivo `Postman_Collection.json`. Importalo en Postman y seguí estos tres pasos:
+En la raíz del proyecto dejé un `Postman_Collection.json` listo para importar, pero básicamente el flujo es este:
 
-1. **Crear el usuario:** Ejecutá una petición POST al endpoint de crear usuarios en el puerto 8080. Copiate el UUID que te devuelve el sistema.
-2. **Realizar el pago:** Ejecutá el POST de cobrar suscripción apuntando al puerto 8081. Vas a notar que tenés que pegar tu UUID en el body.
-3. **Verificar estado:** Hace un GET al endpoint de estado del puerto 8080. Deberías ver que la membresía figura como activa gracias a que el servicio atrapó el evento por Kafka bajo el capó.
+**1. Crear un usuario:**
+```bash
+curl -X POST http://localhost:8080/api/users \
+-H "Content-Type: application/json" \
+-d '{"email": "test@rappi.com", "name": "Ramiro Test"}'
+```
+*(Copiá el `id` que te devuelve, por ejemplo: `b9d68ae5-5eb6...`)*
+
+**2. Pagar Suscripción:**
+```bash
+curl -X POST http://localhost:8081/api/payments/charge \
+-H "Content-Type: application/json" \
+-d '{
+    "userId": "b9d68ae5-5eb6-4063-a582-9285d0b415ea", 
+    "amount": 49.90, 
+    "concept": "RAPPI_PRO_PLUS"
+}'
+```
+*(Si pones un ID que no existe, el sistema te rebota con HTTP 400 frenando el pago)*
+
+**3. Chequear el Estado:**
+```bash
+curl -X GET http://localhost:8080/api/memberships/status/b9d68ae5-5eb6-4063-a582-9285d0b415ea
+```
+*(Debería devolver ACTIVA, confirmando que el evento asíncrono pasó de Pagos -> Kafka -> Membresías).*
