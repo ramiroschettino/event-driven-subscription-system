@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "4b6f1571-0612-4217-9159-247d4e38e6e5",
+		"name": "Rappi PRO Architecture",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "0"
+	},
+	"item": [
+		{
+			"name": "0. Crear Usuario",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"test@rappi.com\",\n    \"name\": \"Ramiro Test\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1. Pagar Suscripción",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"<REEMPLAZAR_POR_UUID_DEVUELTO_POR_ENDPOINT_0>\",\n    \"amount\": 49.90,\n    \"concept\": \"RAPPI_PRO_PLUS\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/payments/charge",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"payments",
+						"charge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Chequear Estado Membresía",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/memberships/status/<REEMPLAZAR_POR_UUID_DEVUELTO_POR_ENDPOINT_0>",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"memberships",
+						"status",
+						"<REEMPLAZAR_POR_UUID_DEVUELTO_POR_ENDPOINT_0>"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
